@@ -125,7 +125,7 @@
                     let correctAnswered = 0;
                     let totalChecked = 0;
                     blockAnswers.forEach(element => {
-                        let isCorrect = element.getAttribute("is-corrent") == "true" ? true : false;
+                        let isCorrect = element.getAttribute("is-correct") == "true" ? true : false;
                         if (element.checked) {
                             totalChecked++;
                             if (isCorrect) {
@@ -200,14 +200,14 @@
             createRadio(currentAnswer) {
                 let id = this.hashCode(currentAnswer.answer);
                 let elAnswer = currentAnswer.answer.replace(new RegExp('\r?\n', 'g'), '<br />');
-                let htmlElement = `<input class="answers" type="radio" id="${id}" name="radio" is-corrent="${currentAnswer.isCorrect}"><label for="${id}">${elAnswer}</label>`;
+                let htmlElement = `<input class="answers" type="radio" id="${id}" name="radio" is-correct="${currentAnswer.isCorrect}"><label for="${id}">${elAnswer}</label>`;
 
                 return htmlElement;
             },
             createCheckbox(currentAnswer) {
                 let id = this.hashCode(currentAnswer.answer);
                 let elAnswer = currentAnswer.answer.replace(new RegExp('\r?\n', 'g'), '<br />');
-                let htmlElement = `<input class="answers" type="checkbox" id="${id}" is-corrent="${currentAnswer.isCorrect}"><label for="${id}">${elAnswer}</label>`;
+                let htmlElement = `<input class="answers" type="checkbox" id="${id}" is-correct="${currentAnswer.isCorrect}"><label for="${id}">${elAnswer}</label>`;
 
                 return htmlElement;
             },
