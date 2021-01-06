@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Test Trainer</title>
+    <link rel="stylesheet" href="libs/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="style/style.css">
+    <script src="libs/jquery/jquery-3.5.1.slim.min.js"></script>
+    <script src="libs/popper/popper.min.js"></script>
+    <script src="libs/bootstrap/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="container mt-1">
+        <div>
+            <select id="selectExam" title="Choose an exam to start staining!"></select>
+        </div>
+
+        <!-- Exam name -->
+        <h2>
+            <a title="go to certificate" id="certificate" href="#" target="_blank">
+                Exam Name
+            </a>
+        </h2>
+
+        <!-- Questions -->
+        <div id="alertSelect"></div>
+        <div class="p-2 mt-4" style="background-color: #eeeff0;">
+            <div class="row">
+                <div class="col-sm-6 col-md-6">
+                    Question <span id="questionNo">0</span> / <span id="questionTotal">0</span>
+                </div>
+                <div class="col-sm-6 col-md-6 text-right">
+                    Score <span id="score" style="font-weight:bold">0</span>
+                </div>
+                <div class="col-sm-12 col-md-12 mt-1">
+                    <div id="question">No question found.</div>
+                    <ol type="A" class="mt-1" id="answers"></ol>
+                </div>
+                <div class="col-sm-8 col-md-7 mt-1">
+                    <button type="button" class="btn btn-success mr-4" id="saveBtn">Save</button>
+                    <button type="button" class="btn btn-primary ml-4" id="nextBtn">Next</button>
+                    <button type="button" class="btn btn-warning" id="retakeQuestions">Retake failed</button>
+                </div>
+                <div class="col-sm-4 col-md-5 text-right mt-1">
+                    <button type="button" class="btn btn-warning" id="startOver">Star Over</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- load exam data -->
+    <script src="examData.js"></script>
+
+    <script>
+        // exam engine logic
+        let engine = {
+            questions: [],
+            remainingQuestions: [],
+            wrongQuestions: [],
+            currentQuestion: {},
+
+            score: 0,
+            currentQuestionNo: 0,
+            totalQuestions: 0,
+
+            setExam(exam) {
+                this.questions = exam.questions;
+                let a = document.getElementById('certificate');
+                a.href = exam.link;
+                a.innerHTML = exam.name;
+                this.startExam();
+            },
+
+            startExam() {
+                if (this.questions.length == 0) {
+                    this.showWarning("Something went wrong, no questions found!");
+                }
+                this.reset();
+                this.wrongQuestions = [];
+                this.remainingQuestions = [].concat(this.questions);
+
+                this.totalQuestions = this.remainingQuestions.length;
+                this.viewTotalQuestions();
+                this.showNextQuestion();
+            },
+            startWithFailedQuestions() {
+                this.reset();
+                this.remainingQuestions = [].concat(this.wrongQuestions);
+                this.wrongQuestions = [];
+
+                this.totalQuestions = this.remainingQuestions.length;
+                this.viewTotalQuestions();
+                this.showNextQuestion();
+            },
+            showNextQuestion() {
+                this.toggleNext(false);
+                this.currentQuestionNo++;
+                this.viewCurrentQuestionNo();
+
+                let random = Math.floor(Math.random() * this.remainingQuestions.length);
+
+                this.currentQuestion = this.remainingQuestions.splice(random, 1)[0];
+                this.viewQuestion(this.currentQuestion);
+            },
+            submitAnswer() {
+                var len = document.querySelectorAll('.answers:checked').length
+                if (len <= 0) {
+                    this.showWarning("Please select at least one answer!");
+                } else {
+                    const blockAnswers = document.querySelectorAll('.answers');
+
+                    if (blockAnswers[0].getAttribute("disabled")) {
+                        return;
+                    }
+
+                    blockAnswers.forEach(element => {
+                        element.setAttribute("disabled", true);
+                    });
+
+                    let numOfValidAnswers = 0;
+                    let correctAnswered = 0;
+                    let totalChecked = 0;
+                    blockAnswers.forEach(element => {
+                        let isCorrect = element.getAttribute("is-corrent") == "true" ? true : false;
+                        if (element.checked) {
+                            totalChecked++;
+                            if (isCorrect) {
+                                correctAnswered++;
+                            } else {
+                                element.nextElementSibling.style.fontWeight = "bold";
+                                element.nextElementSibling.style.color = "red";
+                            }
+                        }
+
+                        if (isCorrect) {
+                            numOfValidAnswers++;
+                            element.nextElementSibling.style.fontWeight = "bold";
+                            element.nextElementSibling.style.color = "green";
+                        }
+                    });
+
+                    if (numOfValidAnswers == correctAnswered && numOfValidAnswers == totalChecked) {
+                        this.score++;
+                        this.viewScore();
+                    } else {
+                        this.wrongQuestions.push(this.currentQuestion);
+                    }
+
+                    if (this.currentQuestionNo < this.totalQuestions) {
+                        this.toggleNext(true);
+                    } else if (this.wrongQuestions.length > 0) {
+                        this.toggleRetakeQuestions(true);
+                    }
+                }
+            },
+            reset() {
+                this.score = 0;
+                this.currentQuestionNo = 0;
+                this.totalQuestions = 0;
+                this.remainingQuestions = [];
+
+                this.viewCurrentQuestionNo();
+                this.viewTotalQuestions();
+                this.viewScore();
+
+                this.toggleNext(false);
+                this.toggleRetakeQuestions(false);
+            },
+            viewTotalQuestions() {
+                document.getElementById("questionTotal").innerHTML = this.totalQuestions;
+            },
+            viewCurrentQuestionNo() {
+                document.getElementById("questionNo").innerHTML = this.currentQuestionNo;
+            },
+            viewScore() {
+                document.getElementById("score").innerHTML = this.score;
+            },
+            viewQuestion(currentQuestion) {
+                let elQuestion = currentQuestion.question.replace(new RegExp('\r?\n', 'g'), '<br />');
+                document.getElementById("question").innerHTML = elQuestion;
+
+                document.getElementById("answers").innerHTML = "";
+                let answers = [].concat(currentQuestion.answers);
+                let numberOfCorrectAnswers = this.checkNumberOfCorrectAnswers(answers);
+                let htmlElements = [];
+                while (answers.length > 0) {
+                    let randomAnswer = Math.floor(Math.random() * answers.length);
+                    let currentAnswer = answers.splice(randomAnswer, 1)[0];
+                    let inputObj = numberOfCorrectAnswers > 1 ? this.createCheckbox(currentAnswer) : this.createRadio(currentAnswer);
+
+                    htmlElements.push(`<li><div>${inputObj}</div></li>`);
+                }
+
+                document.getElementById("answers").innerHTML = htmlElements.join("");
+            },
+            createRadio(currentAnswer) {
+                let id = this.hashCode(currentAnswer.answer);
+                let elAnswer = currentAnswer.answer.replace(new RegExp('\r?\n', 'g'), '<br />');
+                let htmlElement = `<input class="answers" type="radio" id="${id}" name="radio" is-corrent="${currentAnswer.isCorrect}"><label for="${id}">${elAnswer}</label>`;
+
+                return htmlElement;
+            },
+            createCheckbox(currentAnswer) {
+                let id = this.hashCode(currentAnswer.answer);
+                let elAnswer = currentAnswer.answer.replace(new RegExp('\r?\n', 'g'), '<br />');
+                let htmlElement = `<input class="answers" type="checkbox" id="${id}" is-corrent="${currentAnswer.isCorrect}"><label for="${id}">${elAnswer}</label>`;
+
+                return htmlElement;
+            },
+            checkNumberOfCorrectAnswers(answers) {
+                let options = 0;
+                answers.forEach(answer => {
+                    if (answer.isCorrect) {
+                        options++;
+                    }
+                });
+                return options;
+            },
+            hashCode(str) {
+                var hash = 0;
+                if (str.length == 0) return hash;
+                for (i = 0; i < str.length; i++) {
+                    char = str.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash; // Convert to 32bit integer
+                }
+                return hash;
+            },
+            toggleNext(display) {
+                if (display) {
+                    document.getElementById("nextBtn").style.display = "inline-block";
+                } else {
+                    document.getElementById("nextBtn").style.display = "none";
+                }
+            },
+            toggleRetakeQuestions(display) {
+                if (display) {
+                    document.getElementById("retakeQuestions").style.display = "inline-block";
+                } else {
+                    document.getElementById("retakeQuestions").style.display = "none";
+                }
+            },
+            showWarning(errMsg) {
+                let element = `
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    ${errMsg}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                `;
+                document.getElementById("alertSelect").innerHTML = element;
+            }
+        };
+
+        // add data to select options
+        let examSelector = document.getElementById("selectExam");
+        examData.forEach((examObj, index) => {
+            let option = document.createElement("option");
+            option.text = examObj.name;
+            option.value = index;
+            examSelector.add(option);
+        });
+
+        // add login when changin the exam
+        document.getElementById("selectExam").addEventListener("change", () => {
+            let examIndex = document.getElementById("selectExam").value;
+            engine.setExam(examData[examIndex]);
+        });
+
+        // exam logic
+        engine.setExam(examData[0]);
+        document.getElementById("startOver").addEventListener("click", () => {
+            engine.startExam();
+        });
+        document.getElementById("retakeQuestions").addEventListener("click", () => {
+            engine.startWithFailedQuestions();
+        });
+        document.getElementById("nextBtn").addEventListener("click", () => {
+            engine.showNextQuestion();
+        });
+        document.getElementById("saveBtn").addEventListener("click", () => {
+            engine.submitAnswer();
+        });
+
+    </script>
+</body>
+
+</html>
