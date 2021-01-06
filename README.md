@@ -58,4 +58,4 @@ The test object is pretty simple, you'll need to open the `examData.js` and add 
 ## Notes:
 - if your question has only one corrent answer, the engine will create radio buttons for the answers
 - if your question has more that one corrent answers, the engine will create checkboxes for answers
-- you can use place you questions/answers between this \` \` insteand of this "" to display it in different lines or to insert HTML objects such as images
+- you can place your questions/answers between this \` \` insteand of this "" to display it in different lines or to insert HTML objects such as images
