@@ -13,7 +13,7 @@ The test object is pretty simple, you'll need to open the `examData.js` and add 
         link: "this-is-optional",
         questions:[
             {
-                question: "First quiestion",
+                question: "First question",
                 answers: [
                     {
                         answer:"Option 1",
