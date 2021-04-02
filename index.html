@@ -6,16 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple Test Trainer</title>
     <link rel="stylesheet" href="libs/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="assets/style.css">
     <script src="libs/jquery/jquery-3.5.1.slim.min.js"></script>
     <script src="libs/popper/popper.min.js"></script>
     <script src="libs/bootstrap/bootstrap.min.js"></script>
 </head>
 
 <body>
-    <div class="container mt-1">
+    <div class="container mt-1" id="container">
         <div>
-            <select id="selectExam" title="Choose an exam to start staining!"></select>
+            <select id="selectExam" class="btn btn-info" title="Choose an exam to start staining!"></select>
+            <div class="btn-group">
+                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                    UI Settings
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" id="action-fullwidth" href="#">Toggle Fullwidth</a>
+                    <a class="dropdown-item" id="action-darkmode" href="#">Toggle Darkmode</a>
+                </div>
+            </div>
         </div>
 
         <!-- Exam name -->
@@ -27,13 +37,13 @@
 
         <!-- Questions -->
         <div id="alertSelect"></div>
-        <div class="p-2 mt-4" style="background-color: #eeeff0;">
+        <div class="p-2 mt-4 mb-1 testArea">
             <div class="row">
                 <div class="col-sm-6 col-md-6">
                     Question <span id="questionNo">0</span> / <span id="questionTotal">0</span>
                 </div>
                 <div class="col-sm-6 col-md-6 text-right">
-                    Score <span id="score" style="font-weight:bold">0</span>
+                    Score <span id="score">0</span>
                 </div>
                 <div class="col-sm-12 col-md-12 mt-1">
                     <div id="question">No question found.</div>
@@ -285,6 +295,14 @@
         });
         document.getElementById("saveBtn").addEventListener("click", () => {
             engine.submitAnswer();
+        });
+
+        // settings
+        document.getElementById("action-fullwidth").addEventListener("click", () => {
+            document.getElementById("container").classList.toggle("fullWidth");
+        });
+        document.getElementById("action-darkmode").addEventListener("click", () => {
+            document.querySelector("body").classList.toggle("darkMode");
         });
 
     </script>

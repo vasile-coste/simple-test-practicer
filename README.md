@@ -4,6 +4,8 @@
 - This application contains several oracle exam certification questions (the actual ones from 2020) so feel free to train or test your knowledge
 
 
+![test prewiew](./preview.png)
+
 ## How to add new tests:
 The test object is pretty simple, you'll need to open the `examData.js` and add a new block or replace all of them with your own:
 ```

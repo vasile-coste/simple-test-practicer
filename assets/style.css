@@ -1,0 +1,49 @@
+li:hover {
+    background-color: #dddddd;
+}
+
+label {
+    display: initial;
+    margin-left: 5px;
+}
+
+input[type="checkbox"], input[type="radio"] {
+    margin-left: 5px;
+}
+
+#score {
+    font-weight: bold;
+}
+
+#nextBtn, #retakeQuestions {
+    display: none;
+}
+
+img {
+    max-height: 280px;
+    max-width: 100%;
+}
+
+pre {
+    white-space: normal;
+}
+
+.fullWidth {
+    max-width: 100%;
+}
+
+.testArea {
+    background-color: #eeeff0;
+    color: #161616;
+    border-radius: 5px;
+}
+
+.darkMode {
+    background-color: rgb(61, 61, 61);
+    color: #fff
+}
+
+.darkMode .testArea {
+    background-color: #6c757d;
+    color: #fff
+}
