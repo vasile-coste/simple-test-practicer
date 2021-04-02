@@ -298,10 +298,12 @@
         });
 
         // settings
-        document.getElementById("action-fullwidth").addEventListener("click", () => {
+        document.getElementById("action-fullwidth").addEventListener("click", (e) => {
+            e.preventDefault();
             document.getElementById("container").classList.toggle("fullWidth");
         });
-        document.getElementById("action-darkmode").addEventListener("click", () => {
+        document.getElementById("action-darkmode").addEventListener("click", (e) => {
+            e.preventDefault();
             document.querySelector("body").classList.toggle("darkMode");
         });
 
